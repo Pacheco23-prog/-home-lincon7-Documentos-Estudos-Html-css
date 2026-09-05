@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendamento | Corte & Estilo</title>
+    <meta name="description" content="Agende seu horário na barbearia Corte & Estilo.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-booking">
+    <header class="topbar booking-header">
+        <div class="container nav">
+            <div class="logo">
+                <span class="logo-mark">C</span>
+                <div>
+                    <strong>Corte & Estilo</strong>
+                    <small>Barbearia</small>
+                </div>
+            </div>
+
+            <nav>
+                <a href="index.html">Início</a>
+                <a href="index.html#servicos">Serviços</a>
+                <a href="index.html#precos">Preços</a>
+            </nav>
+
+            <a class="btn btn-dark" href="index.html">Voltar</a>
+        </div>
+    </header>
+
+    <main class="booking-main">
+        <section class="booking-hero">
+            <div class="container booking-layout">
+                <div class="booking-card">
+                    <span class="eyebrow">Agendamento</span>
+                    <h1>Reserve seu horário</h1>
+                    <p>Escolha o serviço, o profissional e a melhor data para seu atendimento.</p>
+
+                    <form class="booking-form" id="formAgendamento">
+                        <div class="field-row">
+                            <label>
+                                Nome completo
+                                <input type="text" name="nome" placeholder="Seu nome" required>
+                            </label>
+                            <label>
+                                WhatsApp
+                                <input type="tel" name="whatsapp" placeholder="(11) 99999-9999" required>
+                            </label>
+                        </div>
+
+                        <div class="field-row">
+                            <label>
+                                Serviço
+                                <select name="servico" required>
+                                    <option value="Corte masculino">Corte masculino</option>
+                                    <option value="Barba e bigode">Barba e bigode</option>
+                                    <option value="Combo clássico">Combo clássico</option>
+                                    <option value="Hidratação">Hidratação</option>
+                                </select>
+                            </label>
+                            <label>
+                                Profissional
+                                <select name="profissional" required>
+                                    <option value="Lucas">Lucas</option>
+                                    <option value="Mateus">Mateus</option>
+                                    <option value="Rafael">Rafael</option>
+                                </select>
+                            </label>
+                        </div>
+
+                        <div class="field-row">
+                            <label>
+                                Data
+                                <input type="date" name="data" required>
+                            </label>
+                            <label>
+                                Horário
+                                <select name="horario" required>
+                                    <option value="09:00">09:00</option>
+                                    <option value="10:30">10:30</option>
+                                    <option value="12:00">12:00</option>
+                                    <option value="14:00">14:00</option>
+                                    <option value="16:30">16:30</option>
+                                    <option value="18:00">18:00</option>
+                                </select>
+                            </label>
+                        </div>
+
+                        <label>
+                            Observações
+                            <textarea name="observacoes" rows="4" placeholder="Descreva o estilo desejado, corte ou barba que você prefere..."></textarea>
+                        </label>
+
+                        <button type="submit" class="btn btn-gold full-width">Confirmar agendamento</button>
+                    </form>
+
+                    <div class="saved-section">
+                        <h3>Agendamentos salvos</h3>
+                        <div id="listaAgendamentos" class="agendamentos-lista"></div>
+                    </div>
+                </div>
+
+                <aside class="info-panel">
+                    <div class="panel-box">
+                        <span class="eyebrow">Informações</span>
+                        <h2>Atendimento</h2>
+                        <ul>
+                            <li>Segunda a Sexta</li>
+                            <li>Das 9h às 17h</li>
+                            <li>Rua das Flores, 245</li>
+                            <li>(92) 98478-4845</li>
+                        </ul>
+                    </div>
+
+                    <div class="panel-box highlight">
+                        <span class="eyebrow">Dica</span>
+                        <h3>Nosso atendimento</h3>
+                        <p>Chegue com 10 minutos de antecedência para aproveitar melhor o seu tempo e o resultado final.</p>
+                    </div>
+                </aside>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const form = document.getElementById('formAgendamento');
+        const listaAgendamentos = document.getElementById('listaAgendamentos');
+
+        function carregarAgendamentos() {
+            const agendamentos = JSON.parse(localStorage.getItem('agendamentos') || '[]');
+
+            if (!agendamentos.length) {
+                listaAgendamentos.innerHTML = '<p class="empty-state">Nenhum agendamento salvo ainda.</p>';
+                return;
+            }
+
+            listaAgendamentos.innerHTML = agendamentos.map((cliente, index) => `
+                <div class="agendamento-item">
+                    <div>
+                        <strong>${cliente.nome}</strong>
+                        <p>${cliente.servico} • ${cliente.data} às ${cliente.horario}</p>
+                        <small>${cliente.whatsapp}</small>
+                    </div>
+                    <button type="button" class="delete-btn" data-index="${index}">Excluir</button>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('.delete-btn').forEach(botao => {
+                botao.addEventListener('click', function () {
+                    const indice = Number(this.dataset.index);
+                    const agendamentosAtualizados = JSON.parse(localStorage.getItem('agendamentos') || '[]');
+                    agendamentosAtualizados.splice(indice, 1);
+                    localStorage.setItem('agendamentos', JSON.stringify(agendamentosAtualizados));
+                    carregarAgendamentos();
+                });
+            });
+        }
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const dadosCliente = {
+                nome: form.nome.value,
+                whatsapp: form.whatsapp.value,
+                servico: form.servico.value,
+                profissional: form.profissional.value,
+                data: form.data.value,
+                horario: form.horario.value,
+                observacoes: form.observacoes.value,
+                criadoEm: new Date().toISOString()
+            };
+
+            const agendamentos = JSON.parse(localStorage.getItem('agendamentos') || '[]');
+            agendamentos.push(dadosCliente);
+            localStorage.setItem('agendamentos', JSON.stringify(agendamentos));
+
+            alert('Agendamento salvo com sucesso!');
+            form.reset();
+            carregarAgendamentos();
+        });
+
+        carregarAgendamentos();
+    </script>
+</body>
+</html>
